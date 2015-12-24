@@ -3880,6 +3880,27 @@ test('hyperquest works', function(t) {
   });
 });
 
+test('match domain using intercept callback', function (t) {
+  var validUrl = [
+    '/cats',
+    '/dogs'
+  ];
+
+  nock('http://www.interceptexample.com')
+    .get(function(uri) {
+      return validUrl.indexOf(uri) >= 0;
+    })
+    .reply(200, 'Match intercept');
+
+  mikealRequest.get('http://www.interceptexample.com/cats', function(err, res, body) {
+    t.type(err, 'null');
+    t.equal(res.statusCode, 200);
+    t.equal(body, 'Match intercept');
+
+    t.end();
+  });
+});
+
 test('remove interceptor for GET resource', function(t) {
   var scope = nock('http://example.org')
     .get('/somepath')
